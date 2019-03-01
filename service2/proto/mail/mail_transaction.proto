@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package mail;
+
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+
+// Mail transaction being enriched during the different steps in the pipeline.
+// Transaction context - the rule of thumb is that if we need it after data fetch service we will attach to
+// the tx itself such as the O365 user_id field which is an unmanaged Cyren user.
+message MailTransaction {
+    // generated tx uuid or the actual arrived notification tx id
+    string id = 1 [(validator.field) = {string_not_empty: true}];
+    // subscription_id
+    string subscription_id = 2 [(validator.field) = {string_not_empty: true}];
+    // user_id
+    string user_id = 3 [(validator.field) = {string_not_empty: true}];
+    // connection_id
+    string connection_id = 4;
+    // created tx time
+    int64 tx_created_at = 5 [(validator.field) = {msg_exists : true}];
+     // Reported by System/Employee email
+    string reported_by = 6 [(validator.field) = {string_not_empty: true}];
+
+    string trace = 7;
+}

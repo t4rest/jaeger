@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package subscription;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+service Subscription {
+    rpc GetSubscription (SubscriptionRequest) returns (SubscriptionResponse);
+    rpc GetUserGroup (GroupRequest) returns (GroupResponse);
+}
+
+// The request message containing the subscription_id.
+message SubscriptionRequest {
+    string subscription_id = 1 [(validator.field) = {string_not_empty: true}];
+}
+
+// The response message containing the subscription
+message SubscriptionResponse {
+    string user_id = 1;
+    string subscription_id = 2;
+    string connection_id = 3;
+    string subscription_type = 4;
+    string client_state = 5;
+}
+
+// The request message containing the user_id.
+message GroupRequest {
+    string user_id = 1 [(validator.field) = {string_not_empty: true}];
+}
+
+// The request message containing the user's groups.
+message GroupResponse {
+    string user_id = 1;
+    repeated string group = 2;
+}
