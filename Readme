@@ -1,3 +1,11 @@
+Jaeger Docker - jaegertracing/all-in-one
+
+https://opencensus.io/exporters/supported-exporters/go/
+https://github.com/census-instrumentation/opencensus-go
+
+
+For testing:
+
 1) service1 -  принимает запрос POST http://localhost:8081/notification
 2) service1 - grpc call  на subscription
 3) service1 - паблишит в топик "service1"
@@ -8,16 +16,12 @@
 
 7) service3 - консьюмит с топика "service2"
 
-TODO: Add tags transaction_id
-
-https://opencensus.io/exporters/supported-exporters/go/
-https://github.com/census-instrumentation/opencensus-go
-
-
-
 Transports:
 connection - http(8087)
 service1 - http(8081), kafka(publisher)
 service2 - kafka(subscriber, publisher)
 service3 - kafka(subscriber)
 subscription - grpc(8088)
+
+TODO: - Add tags transaction_id
+TODO: - get AgentEndpoint from env
