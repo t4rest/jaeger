@@ -2,7 +2,6 @@ package main
 
 import (
 	"connection/api"
-	"connection/util"
 	"os"
 	"os/signal"
 
@@ -18,7 +17,7 @@ type Module interface {
 
 func main() {
 
-	util.InitJaeger("connection")
+	//util.InitJaeger("connection")
 
 	apiModel := api.New()
 

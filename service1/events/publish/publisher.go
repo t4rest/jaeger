@@ -1,14 +1,11 @@
 package publish
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
 	"service1/proto/mail"
 
 	"github.com/Shopify/sarama"
 	"github.com/sirupsen/logrus"
-	"go.opencensus.io/trace"
 )
 
 // Publisher interface
@@ -38,20 +35,6 @@ func New() (*kafkaPub, error) {
 
 // Publish publish event
 func (kfk *kafkaPub) Publish(txMail *mail.MailTransaction) error {
-
-	//////////////////////////////////////////// Trace //////////////////////////////////////////////////////////////////////////
-	_, span := trace.StartSpan(context.Background(), "Publish")
-	span.AddAttributes(trace.StringAttribute("service1", "Publish"))
-	logrus.Printf("TraceId: %s\n", span.SpanContext().TraceID.String())
-	spanContextJson, err := json.Marshal(span.SpanContext())
-	if err != nil {
-		return err
-	}
-	defer span.End()
-	// adding trace info to transaction
-	txMail.Trace = string(spanContextJson)
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	data, err := txMail.Marshal()
 	if err != nil {
 		return fmt.Errorf("marshal error: %s", err)

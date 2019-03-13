@@ -6,6 +6,7 @@ import (
 	"service2/connection"
 	"service2/events/publish"
 	"service2/proto/mail"
+	"time"
 
 	"go.opencensus.io/trace"
 
@@ -100,45 +101,40 @@ func (sub *Subscriber) consumePartition(consumer *cluster.Consumer, pc cluster.P
 				return
 			}
 
-			///////////////////////////////// Trace /////////////////////////////////////////////
-			// getting trace info from transaction
-			var spanContext trace.SpanContext
-			err = json.Unmarshal([]byte(txMail.Trace), &spanContext)
-			if err != nil {
-				logrus.Errorf("consumePartition, json.Unmarshal: %v\n", err)
-				return
-			}
-
-			ctx, span := trace.StartSpanWithRemoteParent(
-				context.Background(), "consumePartition", spanContext)
-			defer span.End()
-			////////////////////////////////////////////////////////////////////////////////////
-
-			sub.service(ctx, txMail)
-
+			sub.service(txMail)
 		}()
 	}
 }
 
-func (sub *Subscriber) service(ctx context.Context, txMail *mail.MailTransaction) {
+func (sub *Subscriber) service(txMail *mail.MailTransaction) {
+
 	///////////////////////////////// Trace /////////////////////////////////////////////
-	ctx2, span := trace.StartSpan(ctx, "service")
+	// getting trace info from transaction
+	var spanContext trace.SpanContext
+	err := json.Unmarshal([]byte(txMail.Trace), &spanContext)
+	if err != nil {
+		logrus.Errorf("consumePartition, json.Unmarshal: %v\n", err)
+		return
+	}
+
+	ctx, span := trace.StartSpanWithRemoteParent(
+		context.Background(), "service2.consumePartition", spanContext)
 	defer span.End()
+	////////////////////////////////////////////////////////////////////////////////////
+
+	con, err := connection.GetConnection(ctx)
+	if err != nil {
+		logrus.Errorf("service: error: %s", err)
+	}
+	txMail.ConnectionId = con.ConnectionID
+
+	time.Sleep(2 * time.Second)
+
 	spanContextJson, err := json.Marshal(span.SpanContext())
 	if err != nil {
 		return
 	}
-	// updating trace info in transaction
 	txMail.Trace = string(spanContextJson)
-	////////////////////////////////////////////////////////////////////////////////////
-
-	con, err := connection.GetConnection(ctx2)
-	if err != nil {
-		logrus.Errorf("service: error: %s", err)
-	}
-
-	txMail.ConnectionId = con.ConnectionID
-
 	err = sub.pub.Publish(txMail)
 	if err != nil {
 		logrus.Errorf("service: error: %s", err)

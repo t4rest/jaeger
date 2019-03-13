@@ -14,7 +14,7 @@ import (
 
 // SubProvider represents an interface to the Subscription grpc service
 type SubProvider interface {
-	GetSubscription(subID string) (*subscription.SubscriptionResponse, error)
+	GetSubscription(ctx context.Context, subID string) (*subscription.SubscriptionResponse, error)
 }
 
 type subsProvider struct {
@@ -43,9 +43,9 @@ func New() (*subsProvider, error) {
 }
 
 // GetSubscription .
-func (p *subsProvider) GetSubscription(subID string) (*subscription.SubscriptionResponse, error) {
+func (p *subsProvider) GetSubscription(ctx context.Context, subID string) (*subscription.SubscriptionResponse, error) {
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(p.timeout)*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(p.timeout)*time.Second)
 	defer cancel()
 
 	req := &subscription.SubscriptionRequest{SubscriptionId: subID}

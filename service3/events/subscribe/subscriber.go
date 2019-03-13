@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"service3/proto/mail"
+	"time"
 
 	"go.opencensus.io/trace"
 
@@ -108,7 +109,7 @@ func (sub *Subscriber) consumePartition(consumer *cluster.Consumer, pc cluster.P
 			}
 
 			ctx, span := trace.StartSpanWithRemoteParent(
-				context.Background(), "consumePartition", spanContext)
+				context.Background(), "service3.consumePartition", spanContext)
 			defer span.End()
 			////////////////////////////////////////////////////////////////////////////////////
 
@@ -119,6 +120,7 @@ func (sub *Subscriber) consumePartition(consumer *cluster.Consumer, pc cluster.P
 }
 
 func (sub *Subscriber) service(ctx context.Context, txMail *mail.MailTransaction) {
+	time.Sleep(3 * time.Second)
 
 	logrus.Infof("service3")
 }

@@ -5,12 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"go.opencensus.io/plugin/ochttp"
-	"go.opencensus.io/stats/view"
-	"go.opencensus.io/tag"
 )
 
 // Connection .
@@ -22,19 +19,6 @@ type Connection struct {
 func GetConnection(ctx context.Context) (Connection, error) {
 
 	///////////////////////////////// Trace /////////////////////////////////////////////
-	customView := &view.View{
-		Name:        "httpclient_get_onnection",
-		TagKeys:     []tag.Key{ochttp.KeyClientPath},
-		Measure:     ochttp.ClientRoundtripLatency,
-		Aggregation: ochttp.DefaultLatencyDistribution,
-	}
-
-	err := view.Register(ochttp.ClientSentBytesDistribution, ochttp.ClientReceivedBytesDistribution,
-		ochttp.ClientRoundtripLatencyDistribution, customView)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	client := &http.Client{
 		Transport: &ochttp.Transport{},
 	}
@@ -46,6 +30,7 @@ func GetConnection(ctx context.Context) (Connection, error) {
 	if err != nil {
 		return conn, err
 	}
+	req = req.WithContext(ctx)
 
 	resp, err := client.Do(req)
 	if err != nil {
