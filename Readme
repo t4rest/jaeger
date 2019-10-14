@@ -22,6 +22,3 @@ service1 - http(8081), kafka(publisher)
 service2 - kafka(subscriber, publisher)
 service3 - kafka(subscriber)
 subscription - grpc(8088)
-
-TODO: - Add tags transaction_id
-TODO: - get AgentEndpoint from env
