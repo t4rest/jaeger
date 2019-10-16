@@ -1,9 +1,11 @@
 package main
 
 import (
-	"connection/api"
 	"os"
 	"os/signal"
+
+	"connection/api"
+	"connection/trace"
 
 	"github.com/sirupsen/logrus"
 )
@@ -16,8 +18,11 @@ type Module interface {
 }
 
 func main() {
-
-	//util.InitJaeger("connection")
+	exp, err := trace.InitJaeger("connection", "localhost:6831")
+	if err != nil {
+		logrus.WithError(err).Fatal("InitJaeger")
+	}
+	defer exp.Flush()
 
 	apiModel := api.New()
 
@@ -32,6 +37,7 @@ func RunModules(modules ...Module) {
 			logrus.Infof("Stopping module %s", m.Title())
 			m.Stop()
 		}
+
 		logrus.Infof("Stopped all modules")
 	}()
 

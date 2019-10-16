@@ -1,9 +1,10 @@
 module connection
 
+go 1.12
+
 require (
-	github.com/opentracing-contrib/go-stdlib v0.0.0-20190205184154-464eb271c715
-	github.com/opentracing/opentracing-go v1.0.2
-	github.com/sirupsen/logrus v1.3.0
-	go.opencensus.io v0.19.0
-	golang.org/x/net v0.0.0-20190228165749-92fc7df08ae7 // indirect
+	contrib.go.opencensus.io/exporter/jaeger v0.1.0
+	github.com/jinzhu/gorm v1.9.11 // indirect
+	github.com/sirupsen/logrus v1.4.2
+	go.opencensus.io v0.22.1
 )

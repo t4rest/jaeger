@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/sirupsen/logrus"
+	"go.opencensus.io/plugin/ochttp"
+	"go.opencensus.io/plugin/ochttp/propagation/b3"
 )
 
 // API serves the end users requests.
@@ -24,20 +26,15 @@ func (api *API) Title() string {
 
 // Start starts the http server and binds the handlers.
 func (api *API) Start() {
-	// todo: https://godoc.org/go.opencensus.io/plugin/ochttp
 
 	mux := http.NewServeMux()
+	mux.Handle("/connections", RequestLogger(api.ConnectionHandler, "connection.ConnectionHandler"))
+	mux.Handle("/connections/:id", RequestLogger(api.ConnectionHandler, "connection.ConnectionHandler"))
 
-	//mux.Handle("/connection", ochttp.WithRouteTag(RequestLogger(api.ConnectionHandler, "connection.ConnectionHandler"), "/connection"))
-	mux.Handle("/connection", RequestLogger(api.ConnectionHandler, "connection.ConnectionHandler"))
-
-	//log.Fatal(http.ListenAndServe(":8087", &ochttp.Handler{
-	//	Handler:     mux,
-	//	Propagation: &b3.HTTPFormat{},
-	//}))
-
-	log.Fatal(http.ListenAndServe(":8087", mux))
-
+	log.Fatal(http.ListenAndServe(":8087", &ochttp.Handler{
+		Handler:     mux,
+		Propagation: &b3.HTTPFormat{},
+	}))
 }
 
 // Stop stops server

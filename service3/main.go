@@ -4,7 +4,7 @@ import (
 	"os"
 	"os/signal"
 	"service3/events/subscribe"
-	"service3/util"
+	"service3/trace"
 
 	"github.com/sirupsen/logrus"
 )
@@ -17,8 +17,11 @@ type Module interface {
 }
 
 func main() {
-
-	util.InitJaeger("service3")
+	exp, err := trace.InitJaeger("connection", "localhost:6831")
+	if err != nil {
+		logrus.WithError(err).Fatal("InitJaeger")
+	}
+	defer exp.Flush()
 
 	eventsModule := subscribe.New()
 

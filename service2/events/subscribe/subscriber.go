@@ -127,6 +127,10 @@ func (sub *Subscriber) service(txMail *mail.MailTransaction) {
 		logrus.Errorf("service: error: %s", err)
 	}
 	txMail.ConnectionId = con.ConnectionID
+	span = trace.FromContext(ctx)
+	if span != nil {
+		span.AddAttributes(trace.StringAttribute("transaction.test", "test1"))
+	}
 
 	time.Sleep(2 * time.Second)
 

@@ -11,6 +11,7 @@ import (
 // Publisher interface
 type Publisher interface {
 	Publish(evn *mail.MailTransaction) error
+	Close()
 }
 
 type kafkaPub struct {
@@ -18,7 +19,7 @@ type kafkaPub struct {
 }
 
 // New creates new kafka connection
-func New() (*kafkaPub, error) {
+func New() (Publisher, error) {
 
 	config := sarama.NewConfig()
 	config.Producer.RequiredAcks = sarama.WaitForAll // Wait for all in-sync replicas to ack the message

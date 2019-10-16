@@ -7,7 +7,7 @@ import (
 	"service1/api"
 	"service1/events/publish"
 	"service1/subprovider"
-	"service1/util"
+	"service1/trace"
 
 	"github.com/sirupsen/logrus"
 )
@@ -20,8 +20,11 @@ type Module interface {
 }
 
 func main() {
-
-	util.InitJaeger("service1")
+	exp, err := trace.InitJaeger("connection", "localhost:6831")
+	if err != nil {
+		logrus.WithError(err).Fatal("InitJaeger")
+	}
+	defer exp.Flush()
 
 	// Init Pub
 	ps, err := publish.New()

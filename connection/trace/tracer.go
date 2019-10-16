@@ -1,25 +1,29 @@
-package util
+package trace
 
 import (
-	"go.opencensus.io/exporter/jaeger"
+	"fmt"
+
+	"contrib.go.opencensus.io/exporter/jaeger"
 	"go.opencensus.io/trace"
 )
 
-func InitJaeger(serviceName string) {
+// InitJaeger .
+func InitJaeger(serviceName, jaegerEndpointAddr string) (*jaeger.Exporter, error) {
 	exporter, err := jaeger.NewExporter(jaeger.Options{
-		AgentEndpoint: "localhost:6831",
+		AgentEndpoint: jaegerEndpointAddr,
 		Process: jaeger.Process{
 			ServiceName: serviceName,
-			Tags: []jaeger.Tag{
-				jaeger.StringTag("hostname", "localhost"),
-			},
 		},
 	})
+
 	if err != nil {
-		return
+		return nil, fmt.Errorf("new exporter: %s", err)
 	}
+
 	trace.RegisterExporter(exporter)
 	trace.ApplyConfig(trace.Config{
 		DefaultSampler: trace.AlwaysSample(),
 	})
+
+	return exporter, nil
 }

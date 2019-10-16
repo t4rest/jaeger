@@ -4,7 +4,7 @@ import (
 	"os"
 	"os/signal"
 	"subscription/grpc_server"
-	"subscription/util"
+	"subscription/trace"
 
 	"github.com/sirupsen/logrus"
 )
@@ -17,8 +17,11 @@ type Module interface {
 }
 
 func main() {
-
-	util.InitJaeger("subscription")
+	exp, err := trace.InitJaeger("connection", "localhost:6831")
+	if err != nil {
+		logrus.WithError(err).Fatal("InitJaeger")
+	}
+	defer exp.Flush()
 
 	grpcModule := grpc_server.New()
 

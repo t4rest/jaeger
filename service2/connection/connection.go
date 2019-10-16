@@ -1,6 +1,7 @@
 package connection
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 
 	"go.opencensus.io/plugin/ochttp"
+	"go.opencensus.io/trace"
 )
 
 // Connection .
@@ -17,16 +19,20 @@ type Connection struct {
 
 // GetConnection .
 func GetConnection(ctx context.Context) (Connection, error) {
+	span := trace.FromContext(ctx)
+	defer span.End()
 
-	///////////////////////////////// Trace /////////////////////////////////////////////
+	conn := Connection{}
 	client := &http.Client{
 		Transport: &ochttp.Transport{},
 	}
-	////////////////////////////////////////////////////////////////////////////////////
 
-	conn := Connection{}
+	jsonData, err := json.Marshal(map[string]string{"test": "test"})
+	if err != nil {
+		return conn, fmt.Errorf("marshal error: %s", err)
+	}
 
-	req, err := http.NewRequest("GET", "http://localhost:8087/connection", nil)
+	req, err := http.NewRequest(http.MethodPost, "http://localhost:8087/connection", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return conn, err
 	}

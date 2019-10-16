@@ -1,0 +1,57 @@
+version: '2'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  connection:
+    build: ./connection
+    networks:
+      - app-tier
+  subscription:
+    build: ./subscription
+    networks:
+      - app-tier
+  service1:
+    build: ./service1
+    networks:
+      - app-tier
+  service2:
+    build: ./service2
+    networks:
+      - app-tier
+  service3:
+    build: ./service3
+    networks:
+      - app-tier
+  jaeger:
+    image: 'jaegertracing/all-in-one:1.13'
+    ports:
+      - '5775:5775'
+      - '6831:6831'
+      - '6832:6832'
+      - '5778:5778'
+      - '16686:16686'
+      - '14268:14268'
+      - '9411:9411'
+    networks:
+      - app-tier
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_PASSWORD=123
+    ports:
+      - '6379:6379'
+    networks:
+      - app-tier
+  redis-sentinel:
+    image: 'bitnami/redis-sentinel:latest'
+    environment:
+      - REDIS_MASTER_HOST=127.0.0.1
+      - REDIS_MASTER_PORT_NUMBER=6379
+      - REDIS_MASTER_PASSWORD=123
+    ports:
+      - '26379:26379'
+    networks:
+      - app-tier
