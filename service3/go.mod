@@ -6,7 +6,7 @@ require (
 	contrib.go.opencensus.io/exporter/jaeger v0.1.0
 	github.com/Shopify/sarama v1.23.1 // indirect
 	github.com/bsm/sarama-cluster v2.1.15+incompatible
-	github.com/gogo/protobuf v1.3.0
+	github.com/gogo/protobuf v1.3.2
 	github.com/mwitkow/go-proto-validators v0.1.0
 	github.com/onsi/ginkgo v1.10.1 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
