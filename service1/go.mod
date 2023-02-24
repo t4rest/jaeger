@@ -10,7 +10,7 @@ require (
 	github.com/mwitkow/go-proto-validators v0.1.0
 	github.com/sirupsen/logrus v1.4.2
 	go.opencensus.io v0.22.1
-	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297
+	golang.org/x/net v0.7.0
 	google.golang.org/grpc v1.23.0
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
 )
